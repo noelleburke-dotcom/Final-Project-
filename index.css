@@ -1,0 +1,41 @@
+h1{
+    text-align: center;
+    color: white;
+    font-size: 90px;
+}
+body{
+   margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.top{
+    background-color: red;
+    text-align: center;
+    flex:1;
+    padding-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bottom{
+    background-color: white;
+    flex: 1;
+}
+
+.buttonsStack {
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; 
+}
+
+footer{
+    background-color: white;
+    padding: 5 rem 5 rem;
+    margin:auto;
+    text-align: center;
+}
+
+

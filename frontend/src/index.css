@@ -1,0 +1,27 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.home-body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.top {
+  background-color: red;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottom {
+  background-color: white;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

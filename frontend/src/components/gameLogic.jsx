@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 let currentRow = 0;
 let gameOver = false;
 
-function PokedleGame() {
+function PokedleGame({onSubmit}) {
   const [guess, setGuess] = useState('');
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
+      if(onSubmit) onSubmit(guess.trim());
       console.log('submitted', guess);
       setGuess('');
     }

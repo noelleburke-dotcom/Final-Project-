@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const axios = require('axios');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -13,16 +15,37 @@ mongoose
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((error) => console.error("❌ Error:", error));
 
-  const guess = require("./models/guess");
+const Guess = require("./models/guess");
 
+app.post("/api/guess", async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ message: "Pokemon name is required" });
 
+    // Fetch from PokeAPI
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`);
+    const pokeData = response.data;
 
-app.post("/api/guess", async (req,res)=>{
-try{
-   const newGuess= new guess(req.body);
-   const savedGuess= await newGuess.save();
-   res.status(201).json(savedGuess);
-} catch (error){
-  res.status(400).json({ message: error.message });
-}
+    // Prepare fields
+    const type1 = pokeData.types[0]?.type?.name || "";
+    const type2 = pokeData.types[1]?.type?.name || "";
+    const dex = pokeData.id;
+    const bst = pokeData.stats.reduce((sum, stat) => sum + stat.base_stat, 0);
+    const gen = 1; // You can calculate generation if you like
+
+    // Log before saving
+    console.log("Data to save:", { name: pokeData.name, type1, type2, dex, bst, gen });
+
+    // Save to MongoDB
+    const newGuess = new Guess({ name: pokeData.name, type1, type2, dex, bst, gen });
+    const savedGuess = await newGuess.save();
+
+    res.status(201).json(savedGuess);
+  } catch (error) {
+    console.error("Error saving guess:", error.message);
+    res.status(400).json({ message: error.message });
+  }
 });
+
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

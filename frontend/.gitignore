@@ -22,5 +22,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-MONGODB_URI=mongodb+srv://NoelleBurke28:Packers01@lab7.vom6jmg.mongodb.net/?appName=Lab7
-PORT=3000
+.env

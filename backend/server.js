@@ -31,7 +31,7 @@ app.post("/api/guess", async (req, res) => {
     const type2 = pokeData.types[1]?.type?.name || "";
     const dex = pokeData.id;
     const bst = pokeData.stats.reduce((sum, stat) => sum + stat.base_stat, 0);
-    const gen = 1; // You can calculate generation if you like
+    const gen = pokeData; // You can calculate generation if you like
 
     // Log before saving
     console.log("Data to save:", { name: pokeData.name, type1, type2, dex, bst, gen });
@@ -44,6 +44,17 @@ app.post("/api/guess", async (req, res) => {
   } catch (error) {
     console.error("Error saving guess:", error.message);
     res.status(400).json({ message: error.message });
+  }
+
+});
+
+app.get("/guesses/:sessionId", async (req,res) =>{
+  try{
+  const{sessionId}= req.params;
+  const guesses=await Guess.find({sessionId}).sort({createdAt:1});
+    res.json(guesses);
+  } catch(error){
+    res.status(500).json({message:"error retrieving guess",error})
   }
 });
 

@@ -3,56 +3,145 @@ import './gameJsx.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import * as bootstrap from 'bootstrap';
 import PokedleGame from './gameLogic.jsx';
+import { getRandomPokemon } from './gameLogic';
 
-function Game() {
-    const[Guesses,setGuesses]= useState([]);
+function getGen(dex) {
+    if (!dex || dex < 1) return 1;
+    if (dex >= 1 && dex <= 151)
+        return 1;
+    if (dex >= 152 && dex <= 251)
+        return 2;
+    if (dex >= 252 && dex <= 386)
+        return 3;
+    if (dex >= 387 && dex <= 493)
+        return 4;
+    if (dex >= 494 && dex <= 649)
+        return 5;
+    if (dex >= 650 && dex <= 721)
+        return 6;
+    if (dex >= 722 && dex <= 809)
+        return 7;
+    if (dex >= 810 && dex <= 898)
+        return 8;
+    if (dex >= 899)
+        return 9;
+}
+const numberHint = (guessValue, actualValue) => {
+    const guessNum = Number(guessValue);
+    const actualNum= Number(actualValue);
+    if (guessNum === actualNum) return { color: 'green', arrow: '' };
+    return { color: 'yellow', arrow: guessNum < actualNum ? '↑' : '↓' };
+};
+const textHint = (guessValue, actualValue) => {
+    if (guessValue === actualValue) return { color: 'green' };
+    return { color: 'red' };
+};
+
+function Game({ sessionId }) {
+    const [Guesses, setGuesses] = useState([]);
+    const [gameOver,setGameOver]= useState(false);
+    const [currentPokemon, setCurrentPokemon] = useState(null);
+    const fetchRandomPokemon = async () => {
+        try {
+            const randomPokemon = await getRandomPokemon();
+             randomPokemon.gen = getGen(randomPokemon.dex);
+            setCurrentPokemon(randomPokemon);
+            console.log(randomPokemon);
+        } catch (err) {
+            console.error('Error fetching random Pokémon:', err);
+        }
+    };
+    const reset= async() =>{
+        const newPokemon=await getRandomPokemon();
+        newPokemon.gen = getGen(newPokemon.dex);
+        setGuesses([]);
+        setGameOver(false);
+        setCurrentPokemon(newPokemon);
+        console.log(newPokemon);
+    };
+
     useEffect(() => {
         document.title = "Pokedle!";
-     }, []);
+
+        fetchRandomPokemon();
+
+        const fetchGuesses = async () => {
+            if (!sessionId) return;
+            try {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/guesses/${sessionId}`);
+                const data = await res.json();
+                setGuesses(data);
+            } catch (err) {
+                console.error("error fetching guesses", err)
+            }
+        };
+
+        fetchGuesses();
+    }, [sessionId]);
+
     const handleGuessSubmit = async (pokemonName) => {
-    try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/guess`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: pokemonName }),
-      });
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/guess`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: pokemonName }),
+            });
 
-      if (!res.ok) throw new Error('Pokemon not found');
+            if (!res.ok) throw new Error('Pokemon not found');
 
-      const data = await res.json();
-      setGuesses([...Guesses, data]);
-    } catch (err) {
-      alert(err.message);
-    }
-  };
+            const data = await res.json();
+            data.gen = getGen(data.dex);
+            if (currentPokemon && data.name.toLowerCase() === currentPokemon.name.toLowerCase()) {
+                setGameOver(true);
+            }   
+            setGuesses([...Guesses, data]);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
 
-  return (
-    <div className="game-container">
+    return (
+        <div className="game-container">
             <h2>Pokedle</h2>
-            <PokedleGame onSubmit={handleGuessSubmit} />
+            <PokedleGame onSubmit={handleGuessSubmit} gameOver={gameOver} />
 
-        <div className="game-board">
-            <div className="labelRow">
-                <div className="label">Guess</div>
-                <div className="label">Type</div>
-                <div className="label">Type 2</div>
-                <div className="label">Gen</div>
-                <div className="label">BST</div>
-                <div className="label">Dex #</div>
+            <div className="game-board">
+                <button className="playAgain" onClick={reset}> Play Again </button>
+               {gameOver && <div className="win"> Congrats! You got it!</div>}
+                <div className="labelRow">
+                    <div className="label">Guess</div>
+                    <div className="label">Type</div>
+                    <div className="label">Type 2</div>
+                    <div className="label">Gen</div>
+                    <div className="label">BST</div>
+                    <div className="label">Dex #</div>
+                </div>
+                {currentPokemon && Guesses.map((GuessItem, index) => (
+                    <div className="tileRow" key={index}>
+                        <div className={`tile tile-name ${textHint(GuessItem.name, currentPokemon.name).color}`}>
+                            {GuessItem.name}
+                        </div>
+                        <div className={`tile tile-type1 ${textHint(GuessItem.type1, currentPokemon.type1).color}`}>
+                            {GuessItem.type1}
+                        </div>
+                        <div className={`tile tile-type2 ${textHint(GuessItem.type2, currentPokemon.type2).color}`}>
+                            {GuessItem.type2}
+                        </div>
+                        <div className={`tile tile-gen ${numberHint(GuessItem.gen, currentPokemon.gen).color}`}>
+                            {GuessItem.gen} {numberHint(GuessItem.gen, currentPokemon.gen).arrow}
+                        </div>
+                        <div className={`tile tile-bst ${numberHint(GuessItem.bst, currentPokemon.bst).color}`}>
+                            {GuessItem.bst} {numberHint(GuessItem.bst, currentPokemon.bst).arrow}
+                        </div>
+                        <div className={`tile tile-dex ${numberHint(GuessItem.dex, currentPokemon.dex).color}`}>
+                            {GuessItem.dex} {numberHint(GuessItem.dex, currentPokemon.dex).arrow}
+                        </div>
+                    </div>
+                ))}
             </div>
-            {Guesses.map((GuessItem, index) => (
-             <div className="tileRow" key={index}>
-            <div className="tile">{GuessItem.name}</div>
-            <div className="tile">{GuessItem.type1}</div>
-            <div className="tile">{GuessItem.type2}</div>
-            <div className="tile">{GuessItem.gen}</div>
-            <div className="tile">{GuessItem.bst}</div>
-            <div className="tile">{GuessItem.dex}</div>
         </div>
-    ))}
-    </div>
-</div>
-);
+    );
 }
+
 
 export default Game;

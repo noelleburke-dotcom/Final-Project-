@@ -48,7 +48,7 @@ app.post("/api/guess", async (req, res) => {
 
 });
 
-app.get("/guesses/:sessionId", async (req,res) =>{
+app.get("/api/guesses/:sessionId", async (req,res) =>{
   try{
   const{sessionId}= req.params;
   const guesses=await Guess.find({sessionId}).sort({createdAt:1});

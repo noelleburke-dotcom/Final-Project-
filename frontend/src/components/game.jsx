@@ -5,7 +5,27 @@ import * as bootstrap from 'bootstrap';
 import PokedleGame from './gameLogic.jsx';
 import { getRandomPokemon } from './gameLogic';
 
-
+    function getGen(dexNumber) {
+    if (!dexNumber ||typeof dexNumber !== "number") return 1;
+    if (dexNumber >= 1 && dexNumber <= 151)
+        return 1;
+    if (dexNumber >= 152 && dexNumber <= 251)
+        return 2;
+    if (dexNumber >= 252 && dexNumber <= 386)
+        return 3;
+    if (dexNumber >= 387 && dexNumber <= 493)
+        return 4;
+    if (dexNumber >= 494 && dexNumber <= 649)
+        return 5;
+    if (dexNumber >= 650 && dexNumber <= 721)
+        return 6;
+    if (dexNumber >= 722 && dexNumber <= 809)
+        return 7;
+    if (dexNumber >= 810 && dexNumber <= 898)
+        return 8;
+    if (dexNumber >= 899)
+        return 9;
+}
 const numberHint = (guessValue, actualValue) => {
     const guessNum = Number(guessValue);
     const actualNum= Number(actualValue);

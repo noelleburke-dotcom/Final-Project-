@@ -22,21 +22,21 @@ app.post("/api/guess", async (req, res) => {
     const { name } = req.body;
     if (!name) return res.status(400).json({ message: "Pokemon name is required" });
 
-    // Fetch from PokeAPI
+
     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`);
     const pokeData = response.data;
 
-    // Prepare fields
+
     const type1 = pokeData.types[0]?.type?.name || "";
     const type2 = pokeData.types[1]?.type?.name || "";
     const dex = pokeData.id;
     const bst = pokeData.stats.reduce((sum, stat) => sum + stat.base_stat, 0);
-    const gen = pokeData; // You can calculate generation if you like
+    const gen = pokeData;
 
-    // Log before saving
+
     console.log("Data to save:", { name: pokeData.name, type1, type2, dex, bst, gen });
 
-    // Save to MongoDB
+ 
     const newGuess = new Guess({ name: pokeData.name, type1, type2, dex, bst, gen });
     const savedGuess = await newGuess.save();
 

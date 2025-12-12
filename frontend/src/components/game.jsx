@@ -5,25 +5,25 @@ import * as bootstrap from 'bootstrap';
 import PokedleGame from './gameLogic.jsx';
 import { getRandomPokemon } from './gameLogic';
 
-function getGen(dex) {
-    if (!dex || dex < 1) return 1;
-    if (dex >= 1 && dex <= 151)
+function getGen(dexNumber) {
+    if (!dexNumber || dexNumber < 1) return 1;
+    if (dexNumber >= 1 && dexNumber <= 151)
         return 1;
-    if (dex >= 152 && dex <= 251)
+    if (dexNumber >= 152 && dexNumber <= 251)
         return 2;
-    if (dex >= 252 && dex <= 386)
+    if (dexNumber >= 252 && dexNumber <= 386)
         return 3;
-    if (dex >= 387 && dex <= 493)
+    if (dexNumber >= 387 && dexNumber <= 493)
         return 4;
-    if (dex >= 494 && dex <= 649)
+    if (dexNumber >= 494 && dexNumber <= 649)
         return 5;
-    if (dex >= 650 && dex <= 721)
+    if (dexNumber >= 650 && dexNumber <= 721)
         return 6;
-    if (dex >= 722 && dex <= 809)
+    if (dexNumber >= 722 && dexNumber <= 809)
         return 7;
-    if (dex >= 810 && dex <= 898)
+    if (dexNumber >= 810 && dexNumber <= 898)
         return 8;
-    if (dex >= 899)
+    if (dexNumber >= 899)
         return 9;
 }
 const numberHint = (guessValue, actualValue) => {
@@ -44,7 +44,7 @@ function Game({ sessionId }) {
     const fetchRandomPokemon = async () => {
         try {
             const randomPokemon = await getRandomPokemon();
-             randomPokemon.gen = getGen(randomPokemon.dex);
+             randomPokemon.gen = getGen(randomPokemon.dexNumber);
             setCurrentPokemon(randomPokemon);
             console.log(randomPokemon);
         } catch (err) {
@@ -53,7 +53,7 @@ function Game({ sessionId }) {
     };
     const reset= async() =>{
         const newPokemon=await getRandomPokemon();
-        newPokemon.gen = getGen(newPokemon.dex);
+        newPokemon.gen = getGen(newPokemon.dexNumber);
         setGuesses([]);
         setGameOver(false);
         setCurrentPokemon(newPokemon);
@@ -84,13 +84,13 @@ function Game({ sessionId }) {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/guess`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: pokemonName }),
+                body: JSON.stringify({ name: pokemonName, sessionId }),
             });
 
             if (!res.ok) throw new Error('Pokemon not found');
 
             const data = await res.json();
-            data.gen = getGen(data.dex);
+            data.gen = getGen(data.dexNumber);
             if (currentPokemon && data.name.toLowerCase() === currentPokemon.name.toLowerCase()) {
                 setGameOver(true);
             }   

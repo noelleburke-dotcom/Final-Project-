@@ -19,7 +19,7 @@ const Guess = require("./models/guess");
 
 app.post("/api/guess", async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, sessionId } = req.body;
     if (!name) return res.status(400).json({ message: "Pokemon name is required" });
 
 
@@ -29,15 +29,37 @@ app.post("/api/guess", async (req, res) => {
 
     const type1 = pokeData.types[0]?.type?.name || "";
     const type2 = pokeData.types[1]?.type?.name || "";
-    const dex = pokeData.id;
-    const bst = pokeData.stats.reduce((sum, stat) => sum + stat.base_stat, 0);
-    const gen = pokeData;
+    const dex = Number(pokeData.id);
+    const bst = Number(pokeData.stats.reduce((sum, stat) => sum + stat.base_stat, 0));
+    
+    function getGen(dexNumber) {
+    if (!dexNumber || dexNumber < 1) return 1;
+    if (dexNumber >= 1 && dexNumber <= 151)
+        return 1;
+    if (dexNumber >= 152 && dexNumber <= 251)
+        return 2;
+    if (dexNumber >= 252 && dexNumber <= 386)
+        return 3;
+    if (dexNumber >= 387 && dexNumber <= 493)
+        return 4;
+    if (dexNumber >= 494 && dexNumber <= 649)
+        return 5;
+    if (dexNumber >= 650 && dexNumber <= 721)
+        return 6;
+    if (dexNumber >= 722 && dexNumber <= 809)
+        return 7;
+    if (dexNumber >= 810 && dexNumber <= 898)
+        return 8;
+    if (dexNumber >= 899)
+        return 9;
+}
+  const gen=getGen(dex);
 
 
     console.log("Data to save:", { name: pokeData.name, type1, type2, dex, bst, gen });
 
  
-    const newGuess = new Guess({ name: pokeData.name, type1, type2, dex, bst, gen });
+    const newGuess = new Guess({ name: pokeData.name, type1:type1, type2: type2, dex: dex, bst: bst, gen: gen, sessionId:sessionId });
     const savedGuess = await newGuess.save();
 
     res.status(201).json(savedGuess);

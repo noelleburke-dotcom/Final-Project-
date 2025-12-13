@@ -33,7 +33,7 @@ app.post("/api/guess", async (req, res) => {
     const bst = Number(pokeData.stats.reduce((sum, stat) => sum + stat.base_stat, 0));
     
     function getGen(dexNumber) {
-    if (!dexNumber || dexNumber < 1) return 1;
+    if (!dexNumber ||typeof dexNumber !== "number") return 1;
     if (dexNumber >= 1 && dexNumber <= 151)
         return 1;
     if (dexNumber >= 152 && dexNumber <= 251)

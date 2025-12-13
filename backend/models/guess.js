@@ -6,7 +6,8 @@ const GuessSchema = new mongoose.Schema({
   type2: { type: String},
   dex: { type: Number },
   bst: { type: Number },
-  gen: { type: Number }
+  gen: { type: Number },
+  sessionId:{type:String}
 }, {
   timestamps: true
 });

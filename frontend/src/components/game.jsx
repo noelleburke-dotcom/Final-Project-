@@ -5,8 +5,8 @@ import * as bootstrap from 'bootstrap';
 import PokedleGame from './gameLogic.jsx';
 import { getRandomPokemon } from './gameLogic';
 
-    function getGen(dexNumber) {
-    if (!dexNumber ||typeof dexNumber !== "number") return 1;
+function getGen(dexNumber) {
+    if (!dexNumber || typeof dexNumber !== "number") return 1;
     if (dexNumber >= 1 && dexNumber <= 151)
         return 1;
     if (dexNumber >= 152 && dexNumber <= 251)
@@ -28,7 +28,7 @@ import { getRandomPokemon } from './gameLogic';
 }
 const numberHint = (guessValue, actualValue) => {
     const guessNum = Number(guessValue);
-    const actualNum= Number(actualValue);
+    const actualNum = Number(actualValue);
     if (guessNum === actualNum) return { color: 'green', arrow: '' };
     return { color: 'yellow', arrow: guessNum < actualNum ? '↑' : '↓' };
 };
@@ -39,20 +39,20 @@ const textHint = (guessValue, actualValue) => {
 
 function Game({ sessionId }) {
     const [Guesses, setGuesses] = useState([]);
-    const [gameOver,setGameOver]= useState(false);
+    const [gameOver, setGameOver] = useState(false);
     const [currentPokemon, setCurrentPokemon] = useState(null);
     const fetchRandomPokemon = async () => {
         try {
             const randomPokemon = await getRandomPokemon();
-             randomPokemon.gen = getGen(randomPokemon.dex);
+            randomPokemon.gen = getGen(randomPokemon.dex);
             setCurrentPokemon(randomPokemon);
             console.log(randomPokemon);
         } catch (err) {
             console.error('Error fetching random Pokémon:', err);
         }
     };
-    const reset= async() =>{
-        const newPokemon=await getRandomPokemon();
+    const reset = async () => {
+        const newPokemon = await getRandomPokemon();
         newPokemon.gen = getGen(newPokemon.dexNumber);
         setGuesses([]);
         setGameOver(false);
@@ -93,7 +93,7 @@ function Game({ sessionId }) {
             data.gen = getGen(data.dex);
             if (currentPokemon && data.name.toLowerCase() === currentPokemon.name.toLowerCase()) {
                 setGameOver(true);
-            }   
+            }
             setGuesses([...Guesses, data]);
         } catch (err) {
             alert(err.message);
@@ -107,7 +107,7 @@ function Game({ sessionId }) {
 
             <div className="game-board">
                 <button className="playAgain" onClick={reset}> Play Again </button>
-               {gameOver && <div className="win"> Congrats! You got it!</div>}
+                {gameOver && <div className="win"> Congrats! You got it!</div>}
                 <div className="labelRow">
                     <div className="label">Guess</div>
                     <div className="label">Type</div>

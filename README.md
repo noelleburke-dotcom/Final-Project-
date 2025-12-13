@@ -12,8 +12,6 @@ Uses PokeAPI
 
 To play the game the code calls a function that generates a random pokemon from the PokeAPI. The function has a list of excluded Pokemon so that only unique Pokemon are included.
 
-SCREENSHOTS here
-
 File Structure
 Final Project 
     /backend
@@ -88,7 +86,7 @@ Backend
 Render
 
 Video Link 
-
+https://drive.google.com/file/d/1WG_jJqIXBkZCJTo4SZNeEkcgbapiOrqX/view?usp=sharing
 
 Reflection
 The hardest part was the logic behind the Pokemon generator. Figuring out how to exclude the specific kinds of Pokemon was difficult. After asking my Professor she said there are built in math functions. Once the logic of which Pokemon to include was done it was a bit easier to put the function together.
